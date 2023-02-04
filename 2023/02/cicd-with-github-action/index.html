@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <script type="application/ld+json">
+
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AWS EC2 CI/CD with Github Action and Docker",
+  
+  "image": "https://yusianglin11010.github.io/images/cicd-with-github-action/pipe-line.jpeg",
+  
+  "datePublished": "2023-02-04T18:00:00+08:00",
+  "dateModified": "2023-02-04T18:00:00+08:00",
+  "author": {
+    "@type": "Person",
+    "name": "Devin Lin",
+    
+    "image": "https://yusianglin11010.github.io/images/pocha.jpeg"
+    
+  },
+  "mainEntityOfPage": { 
+    "@type": "WebPage",
+    "@id": "https:\/\/yusianglin11010.github.io\/2023\/02\/cicd-with-github-action\/" 
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "penguin's home",
+    
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://yusianglin11010.github.io/images/pocha.jpeg"
+    }
+    
+  },
+  "description": "Run CI/CD pipeline with Github action. Let\u0026rsquo;s build your own automated deployment on EC2 with Github and Docker.\n",
+  "keywords": []
+}
+
+</script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.109.0 with theme Tranquilpeak 0.5.3-BETA">
+<meta name="author" content="Devin Lin">
+<meta name="keywords" content="">
+<meta name="description" content="Run CI/CD pipeline with Github action. Let&rsquo;s build your own automated deployment on EC2 with Github and Docker.">
+
+
+<meta property="og:description" content="Run CI/CD pipeline with Github action. Let&rsquo;s build your own automated deployment on EC2 with Github and Docker.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS EC2 CI/CD with Github Action and Docker">
+<meta name="twitter:title" content="AWS EC2 CI/CD with Github Action and Docker">
+<meta property="og:url" content="https://yusianglin11010.github.io/2023/02/cicd-with-github-action/">
+<meta property="twitter:url" content="https://yusianglin11010.github.io/2023/02/cicd-with-github-action/">
+<meta property="og:site_name" content="penguin&#39;s home">
+<meta property="og:description" content="Run CI/CD pipeline with Github action. Let&rsquo;s build your own automated deployment on EC2 with Github and Docker.">
+<meta name="twitter:description" content="Run CI/CD pipeline with Github action. Let&rsquo;s build your own automated deployment on EC2 with Github and Docker.">
+<meta property="og:locale" content="en-us">
+
+  
+    <meta property="article:published_time" content="2023-02-04T18:00:00">
+  
+  
+    <meta property="article:modified_time" content="2023-02-04T18:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="Cloud">
+    
+      <meta property="article:section" content="DevOps">
+    
+      <meta property="article:section" content="CI/CD">
+    
+  
+  
+    
+      <meta property="article:tag" content="EC2">
+    
+      <meta property="article:tag" content="Docker">
+    
+      <meta property="article:tag" content="Github">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://yusianglin11010.github.io/images/pocha.jpeg">
+  <meta property="twitter:image" content="https://yusianglin11010.github.io/images/pocha.jpeg">
+
+
+
+
+
+  <meta property="og:image" content="https://yusianglin11010.github.io/images/cicd-with-github-action/pipe-line.jpeg">
+  <meta property="twitter:image" content="https://yusianglin11010.github.io/images/cicd-with-github-action/pipe-line.jpeg">
+
+
+    <title>AWS EC2 CI/CD with Github Action and Docker</title>
+
+    <link rel="icon" href="https://yusianglin11010.github.io/images/antarctica.png">
+    
+
+    
+
+    <link rel="canonical" href="https://yusianglin11010.github.io/2023/02/cicd-with-github-action/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
+    
+    <link rel="stylesheet" href="https://yusianglin11010.github.io/css/style-h6ccsoet3mzkbb0wngshlfbaweimexgqcxj0h5hu4h82olsdzz6wmqdkajm.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://yusianglin11010.github.io/" aria-label="Go to homepage">penguin&#39;s home</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://yusianglin11010.github.io/#about" aria-label="Open the link: /#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://yusianglin11010.github.io/images/pocha.jpeg" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://yusianglin11010.github.io/#about" aria-label="Read more about the author">
+          <img class="sidebar-profile-picture" src="https://yusianglin11010.github.io/images/pocha.jpeg" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Devin Lin</h4>
+        
+          <h5 class="sidebar-profile-bio">middle class ninja</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://yusianglin11010.github.io/" title="Home">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://yusianglin11010.github.io/categories" title="Categories">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Categories</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://yusianglin11010.github.io/tags" title="Tags">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://yusianglin11010.github.io/archives" title="Archives">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Archives</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/yusianglin11010" target="_blank" rel="noopener" title="GitHub">
+    
+      <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.linkedin.com/in/devin-yu-siang-lin-089b52211/" target="_blank" rel="noopener" title="Linkedin">
+    
+      <i class="sidebar-button-icon fab fa-thin fa-linkedin" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Linkedin</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://yusianglin11010.github.io/index.xml" title="RSS">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-rss" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" id="top">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title">
+      AWS EC2 CI/CD with Github Action and Docker
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time datetime="2023-02-04T18:00:00&#43;08:00">
+        
+  February 4, 2023
+
+      </time>
+    
+    
+  
+  
+    <span>in</span>
+    
+      <a class="category-link" href="https://yusianglin11010.github.io/categories/cloud">Cloud</a>, 
+    
+      <a class="category-link" href="https://yusianglin11010.github.io/categories/devops">DevOps</a>, 
+    
+      <a class="category-link" href="https://yusianglin11010.github.io/categories/ci/cd">CI/CD</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown">
+            <div class="main-content-wrap">
+              <p>Run CI/CD pipeline with Github action. Let&rsquo;s build your own automated deployment on EC2 with Github and Docker.</p>
+<h2 id="tldr">TL;DR</h2>
+<p>You would know how to do the following  after reading.</p>
+<ul>
+<li>
+<p>How to build docker image and push it to docker hub with Github action.</p>
+</li>
+<li>
+<p>How to ssh to your EC2 instance with Github action.</p>
+<p><img src="https://yusianglin11010.github.io/images/cicd-with-github-action/aws-ec2-ci-cd-structure.png" alt="aws-ec2-ci-cd-structure.png"></p>
+</li>
+</ul>
+<hr>
+<h2 id="what-is-cicd">What is CI/CD</h2>
+<p>CI/CD(Continuous Integration and Continuous Deployment). It is a software engineering practice that aims to reduce the time between writing code and actually releasing it to users. This is achieved through automation of the build, test, and deployment process. In a CI/CD pipeline, code changes are automatically built, tested, and deployed to production.</p>
+<hr>
+<h2 id="why-github-action">Why Github Action</h2>
+<p>GitHub Actions is a CI/CD tool provided with GitHub. It allows us to automate tasks related to their projects, such as building code, running tests, and deploying code to production. Github provides the remote server for us to running the tasks. Github action workflows can be triggered by a variety of events, such as pushing code to a branch, opening a pull request, or a schedule.</p>
+<hr>
+<h2 id="ssh-connection-to-remote-server">SSH Connection to Remote Server</h2>
+<p>An SSH connection refers to the process of establishing a secure, encrypted connection to a remote machine using the SSH protocol. User could establish an SSH connection with a public key and private key pair to access the remote machine.</p>
+<hr>
+<h2 id="hands-on">Hands-on</h2>
+<p>Now, let’s get start to make the thing happened! Hands-on source code could be found in this <a href="https://github.com/yusianglin11010/github-action-ec2">repo</a>, you could clone it to your local machine and by yourself.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/yusianglin11010/github-action-ec2
+</span></span></code></pre></div><ul>
+<li>launch an EC2 instance
+<ul>
+<li>Make sure you have docker installed on your instance</li>
+<li>You could follow this post for <a href="https://yusianglin11010.github.io/2023/01/docker-on-aws/">installing docker on EC2 instance</a></li>
+</ul>
+</li>
+<li>remember to start docker service!</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo service docker start
+</span></span></code></pre></div><h3 id="generate-ssh-key">Generate SSH Key</h3>
+<ul>
+<li>Generate ssh key pair for connection
+<ul>
+<li>For this demo, we leave all ssh-keygen options with default value</li>
+<li>All you need is press “enter” until the key generated</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh-keygen
+</span></span></code></pre></div><ul>
+<li>Add public key to authorized_keys</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat id_rsa.pub &gt; authorized_keys
+</span></span></code></pre></div><ul>
+<li>Add the following content to Github secrets, you could follow <a href="https://docs.github.com/en/actions/security-guides/encrypted-secrets">this post</a> for setting Github action secret
+<ul>
+<li>ssh private key</li>
+<li>AWS EC2 hostname</li>
+<li>AWS EC2 user name</li>
+<li>Docker Hub user name</li>
+<li>Docker Hub user password</li>
+</ul>
+</li>
+</ul>
+<h3 id="add-github-action-file">Add Github Action File</h3>
+<ul>
+<li>Add the following script in ./github/workflows/workflow.yaml</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>name: aws-ci-cd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>on:
+</span></span><span style="display:flex;"><span>  push:
+</span></span><span style="display:flex;"><span>    branches:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#39;main&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>jobs:
+</span></span><span style="display:flex;"><span>  CI:
+</span></span><span style="display:flex;"><span>    runs-on: ubuntu-latest
+</span></span><span style="display:flex;"><span>    steps:
+</span></span><span style="display:flex;"><span>      -
+</span></span><span style="display:flex;"><span>        name: Checkout
+</span></span><span style="display:flex;"><span>        uses: actions/checkout@v3
+</span></span><span style="display:flex;"><span>      -
+</span></span><span style="display:flex;"><span>        name: Set up QEMU
+</span></span><span style="display:flex;"><span>        uses: docker/setup-qemu-action@v2
+</span></span><span style="display:flex;"><span>      -
+</span></span><span style="display:flex;"><span>        name: Set up Docker Buildx
+</span></span><span style="display:flex;"><span>        uses: docker/setup-buildx-action@v2
+</span></span><span style="display:flex;"><span>      -
+</span></span><span style="display:flex;"><span>        name: Login to Docker Hub
+</span></span><span style="display:flex;"><span>        uses: docker/login-action@v2
+</span></span><span style="display:flex;"><span>        with:
+</span></span><span style="display:flex;"><span>          username: <span style="color:#e6db74">${</span>{ secrets.DOCKERHUB_USERNAME <span style="color:#e6db74">}</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>          password: <span style="color:#e6db74">${</span>{ secrets.DOCKERHUB_TOKEN <span style="color:#e6db74">}</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      -
+</span></span><span style="display:flex;"><span>        name: Build and Push Image
+</span></span><span style="display:flex;"><span>        uses: docker/build-push-action@v4
+</span></span><span style="display:flex;"><span>        with:
+</span></span><span style="display:flex;"><span>          context: .
+</span></span><span style="display:flex;"><span>          push: true
+</span></span><span style="display:flex;"><span>          tags: devinlin11010/github-action-ec2:latest
+</span></span><span style="display:flex;"><span>  CD:
+</span></span><span style="display:flex;"><span>    needs: docker
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    runs-on: ubuntu-latest
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    steps:
+</span></span><span style="display:flex;"><span>      - uses: actions/checkout@v2 
+</span></span><span style="display:flex;"><span>      - name: Deploy in EC2
+</span></span><span style="display:flex;"><span>        env:
+</span></span><span style="display:flex;"><span>            PRIVATE_KEY: <span style="color:#e6db74">${</span>{ secrets.AWS_PRIVATE_KEY  <span style="color:#e6db74">}</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            HOSTNAME : <span style="color:#e6db74">${</span>{ secrets.AWS_HOSTNAME  <span style="color:#e6db74">}</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            USER_NAME : <span style="color:#e6db74">${</span>{ secrets.AWS_USER  <span style="color:#e6db74">}</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        run: |
+</span></span><span style="display:flex;"><span>          echo <span style="color:#e6db74">&#34;</span>$PRIVATE_KEY<span style="color:#e6db74">&#34;</span> &gt; private_key <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">600</span> private_key
+</span></span><span style="display:flex;"><span>          ls -a
+</span></span><span style="display:flex;"><span>          cat private_key
+</span></span><span style="display:flex;"><span>          ssh -o StrictHostKeyChecking<span style="color:#f92672">=</span>no -i private_key <span style="color:#e6db74">${</span>USER_NAME<span style="color:#e6db74">}</span>@<span style="color:#e6db74">${</span>HOSTNAME<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            #Now we have got the access of EC2 and we will start the deploy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            docker pull devinlin11010/github-action-ec2:latest
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            docker stop nginx &amp;&amp; docker rm nginx
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            docker run -p 80:80 -d --name=&#34;nginx&#34; devinlin11010/github-action-ec2:latest
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          &#39;</span>
+</span></span></code></pre></div><p>Hold on…let’s break down the code</p>
+<ul>
+<li>Firstly, we need to decide when would the workflow be triggered
+<ul>
+<li>we want the workflow be triggered when some change was push to <code>main</code> branch</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>on:
+</span></span><span style="display:flex;"><span>  push:
+</span></span><span style="display:flex;"><span>    branches:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#39;main&#39;</span>
+</span></span></code></pre></div><ul>
+<li>CI Job
+<ul>
+<li>This job section would build docker image and push it to your docker hub</li>
+<li>We would use the <a href="https://github.com/docker/build-push-action">github action published by docker community</a> to complete this task</li>
+<li>The most significant parts are:
+<ul>
+<li><code>context</code> we need to identify our Dockerfile</li>
+<li><code>push</code> determine if you want to <code>push</code> image to docker hub</li>
+<li><code>tag</code>  add your image tag for pushing</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>name: Build and Push Image
+</span></span><span style="display:flex;"><span>uses: docker/build-push-action@v4
+</span></span><span style="display:flex;"><span>with:
+</span></span><span style="display:flex;"><span>  context: .
+</span></span><span style="display:flex;"><span>  push: true
+</span></span><span style="display:flex;"><span>  tags: devinlin11010/github-action-ec2:latest
+</span></span></code></pre></div><ul>
+<li>
+<p>CD Job</p>
+<ul>
+<li>Note that the CD job has a dependency on CI job(because we want to deploy the latest image), so we have to add <code>needs: CI</code> to tell the Github action that CD should be executed after CI completed</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>CD:
+</span></span><span style="display:flex;"><span>    needs: CI
+</span></span></code></pre></div><ul>
+<li>Remembered that we need to write our private key content to a private key file, which is your environment variable <code>PRIVATAE_KEY</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;</span>$PRIVATE_KEY<span style="color:#e6db74">&#34;</span> &gt; private_key <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">600</span> private_key
+</span></span><span style="display:flex;"><span>ssh -o StrictHostKeyChecking<span style="color:#f92672">=</span>no -i private_key <span style="color:#e6db74">${</span>USER_NAME<span style="color:#e6db74">}</span>@<span style="color:#e6db74">${</span>HOSTNAME<span style="color:#e6db74">}</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>
+</span></span></code></pre></div><ul>
+<li>Connect to EC2 with this private key as identifier</li>
+<li>Now you could run the command you want to run on EC2
+<ul>
+<li>In the EC2, we first pull the latest image the just pushed to docker hub in CI stage</li>
+<li>Then we may need to delete the existed hosting image on the instance</li>
+<li>Finally run your latest image</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh -o StrictHostKeyChecking<span style="color:#f92672">=</span>no -i private_key <span style="color:#e6db74">${</span>USER_NAME<span style="color:#e6db74">}</span>@<span style="color:#e6db74">${</span>HOSTNAME<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            #Now we have got the access of EC2 and we will start the deploy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            docker pull devinlin11010/github-action-ec2:latest
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            docker stop nginx &amp;&amp; docker rm nginx
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            docker run -p 80:80 -d --name=&#34;nginx&#34; devinlin11010/github-action-ec2:latest
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          &#39;</span>
+</span></span></code></pre></div></li>
+</ul>
+<hr>
+<h2 id="conclusion">Conclusion</h2>
+<p>Congrats🎉🎉 Now you could automatically deploy your code to AWS EC2. With the Github action, the process deployment would be much easier. You don’t need to manually deploy the code after some feature have made or changed. If you don’t want to build docker image to docker hub, we actually could connect to instance and fetch the Github repo then build your service. I would post this method in the near feature. Hope you enjoy this article and hands-on, feel free to reach me if you encounter any problem😉.</p>
+<h2 id="references">References</h2>
+<p><a href="https://phoenixnap.com/kb/ssh-with-key#ftoc-heading-3">https://phoenixnap.com/kb/ssh-with-key#ftoc-heading-3</a></p>
+<p><a href="https://farhan-tanvir.medium.com/ci-cd-from-github-to-aws-ec2-using-github-action-e18b621c0507">https://farhan-tanvir.medium.com/ci-cd-from-github-to-aws-ec2-using-github-action-e18b621c0507</a></p>
+              
+
+
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://yusianglin11010.github.io/tags/ec2/">EC2</a>
+
+  <a class="tag tag--primary tag--small" href="https://yusianglin11010.github.io/tags/docker/">Docker</a>
+
+  <a class="tag tag--primary tag--small" href="https://yusianglin11010.github.io/tags/github/">Github</a>
+
+                  </div>
+                
+              
+            
+            
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://yusianglin11010.github.io/2023/01/docker-on-aws/" data-tooltip="Run Docker on Aws" aria-label="PREVIOUS: Run Docker on Aws">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" title="Share on Facebook" aria-label="Share on Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" title="Share on Twitter" aria-label="Share on Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" title="Share on Linkedin" aria-label="Share on Linkedin">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="Back to top">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+            
+  
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+    <script type="text/javascript">
+      var disqus_config = function() {
+        this.page.url = 'https:\/\/yusianglin11010.github.io\/2023\/02\/cicd-with-github-action\/';
+        
+          this.page.identifier = '\/2023\/02\/cicd-with-github-action\/'
+        
+      };
+      (function() {
+        
+        
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+          document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+          return;
+        }
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        var disqus_shortname = '';
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+  
+
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2023 Devin Lin. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://yusianglin11010.github.io/2023/01/docker-on-aws/" data-tooltip="Run Docker on Aws" aria-label="PREVIOUS: Run Docker on Aws">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" title="Share on Facebook" aria-label="Share on Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" title="Share on Twitter" aria-label="Share on Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" title="Share on Linkedin" aria-label="Share on Linkedin">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="Back to top">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+      </div>
+      
+<div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-times"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fyusianglin11010.github.io%2F2023%2F02%2Fcicd-with-github-action%2F" aria-label="Share on Facebook">
+          <i class="fab fa-facebook-square" aria-hidden="true"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fyusianglin11010.github.io%2F2023%2F02%2Fcicd-with-github-action%2F" aria-label="Share on Twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fyusianglin11010.github.io%2F2023%2F02%2Fcicd-with-github-action%2F" aria-label="Share on Linkedin">
+          <i class="fab fa-linkedin" aria-hidden="true"></i><span>Share on Linkedin</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+
+
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-times"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://yusianglin11010.github.io/images/pocha.jpeg" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Devin Lin</h4>
+    
+      <div id="about-card-bio">middle class ninja</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Software Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker-alt"></i>
+        <br/>
+        Taipei
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://yusianglin11010.github.io/images/earth.jpeg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://yusianglin11010.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js"></script>
+
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js"></script>
+  
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+    
+  </body>
+</html>
+

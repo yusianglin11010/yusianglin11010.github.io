@@ -6,7 +6,16 @@
     <description>Recent content in Cloud on penguin&#39;s home</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 12 Jan 2023 23:21:33 +0800</lastBuildDate><atom:link href="https://yusianglin11010.github.io/categories/cloud/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 04 Feb 2023 18:00:00 +0800</lastBuildDate><atom:link href="https://yusianglin11010.github.io/categories/cloud/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AWS EC2 CI/CD with Github Action and Docker</title>
+      <link>https://yusianglin11010.github.io/2023/02/cicd-with-github-action/</link>
+      <pubDate>Sat, 04 Feb 2023 18:00:00 +0800</pubDate>
+      
+      <guid>https://yusianglin11010.github.io/2023/02/cicd-with-github-action/</guid>
+      <description>&lt;p&gt;Run CI/CD pipeline with Github action. Let&amp;rsquo;s build your own automated deployment on EC2 with Github and Docker.&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Run Docker on Aws</title>
       <link>https://yusianglin11010.github.io/2023/01/docker-on-aws/</link>

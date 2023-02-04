@@ -42,7 +42,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.104.3 with theme Tranquilpeak 0.5.3-BETA">
+<meta name="generator" content="Hugo 0.109.0 with theme Tranquilpeak 0.5.3-BETA">
 <meta name="author" content="Devin Lin">
 <meta name="keywords" content="">
 <meta name="description" content="AWS EC2 is not installed docker runtime by default. This article would step-by-step introduce few steps to install docker manually on EC2 and run a simple nginx service on it.">
@@ -302,7 +302,7 @@
 </ol>
 <p><img src="https://yusianglin11010.github.io/images/run-docker-on-aws/security-setting.png" alt="select-instance.png"></p>
 <ol>
-<li>left the key pair empty(Proceed without a key pair) and allow HTTP trafic
+<li>left the key pair empty(Proceed without a key pair) and allow HTTP traffic
 <ul>
 <li>for this demo, we don’t need to create key pair because we won’t use key pair to access to this instance.</li>
 <li>remember to allow HTTP because we would create a nginx service later</li>
@@ -347,6 +347,7 @@
 </span></span></code></pre></div><ol>
 <li>now you could reconnect to your instance again, and type <code>docker -v</code> to check if docker installed and your user have the permission to execute <code>docker</code> command</li>
 </ol>
+<hr>
 <h2 id="run-docker">Run Docker</h2>
 <ol>
 <li>start docker service</li>
@@ -364,6 +365,7 @@
 </li>
 </ol>
 <p><img src="https://yusianglin11010.github.io/images/run-docker-on-aws/nginx-welcome.png" alt="nginx-welcome.png"></p>
+<hr>
 <h2 id="make-installation-easier">Make Installation Easier</h2>
 <ol>
 <li>you could add user data while launching the instance.
@@ -377,7 +379,9 @@
 </span></span><span style="display:flex;"><span>sudo yum install -y docker
 </span></span><span style="display:flex;"><span>sudo usermod -a -G docker ec2-user
 </span></span><span style="display:flex;"><span>sudo reboot
-</span></span></code></pre></div><h2 id="if-you-want-to-use-docker-compose">If You Want to Use Docker-Compose</h2>
+</span></span><span style="display:flex;"><span>sudo service docker start
+</span></span></code></pre></div><hr>
+<h2 id="if-you-want-to-use-docker-compose">If You Want to Use Docker-Compose</h2>
 <ol>
 <li>install docker-compose</li>
 </ol>
@@ -386,7 +390,8 @@
 <li>change user permission to execute <code>docker-compose</code></li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo chmod +x /usr/local/bin/docker-compose
-</span></span></code></pre></div><h2 id="conclusion">Conclusion</h2>
+</span></span></code></pre></div><hr>
+<h2 id="conclusion">Conclusion</h2>
 <p>Congrats🎉🎉, now you have already know how to install docker runtime on AWS EC2, and run a simple service on it.</p>
               
 
@@ -416,7 +421,7 @@
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--disabled">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" data-tooltip="AWS EC2 CI/CD with Github Action and Docker" aria-label="NEXT: AWS EC2 CI/CD with Github Action and Docker">
           
               <i class="fa fa-angle-left"></i>
               <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -517,7 +522,7 @@
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--disabled">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://yusianglin11010.github.io/2023/02/cicd-with-github-action/" data-tooltip="AWS EC2 CI/CD with Github Action and Docker" aria-label="NEXT: AWS EC2 CI/CD with Github Action and Docker">
           
               <i class="fa fa-angle-left"></i>
               <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -638,7 +643,7 @@
     
   
     
-      <div id="cover" style="background-image:url('https://yusianglin11010.github.io/images/antarctica.png');"></div>
+      <div id="cover" style="background-image:url('https://yusianglin11010.github.io/images/earth.jpeg');"></div>
     
   
 

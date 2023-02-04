@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CI/CD on penguin&#39;s home</title>
+    <link>https://yusianglin11010.github.io/categories/ci/cd/</link>
+    <description>Recent content in CI/CD on penguin&#39;s home</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://yusianglin11010.github.io/categories/ci/cd/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AWS EC2 CI/CD with Github Action and Docker</title>
+      <link>https://yusianglin11010.github.io/2023/02/cicd-with-github-action/</link>
+      <pubDate>Sat, 04 Feb 2023 18:00:00 +0800</pubDate>
+      
+      <guid>https://yusianglin11010.github.io/2023/02/cicd-with-github-action/</guid>
+      <description>&lt;p&gt;Run CI/CD pipeline with Github action. Let&amp;rsquo;s build your own automated deployment on EC2 with Github and Docker.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
